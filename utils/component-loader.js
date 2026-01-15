@@ -42,15 +42,15 @@ export async function loadComponents() {
 
     // List of component modules to load
     // Add new components to this array
-    const componentFiles = [
-        'colored-square.js',
-        'dial-knob.js',
-        'toggle-switch.js',
-        'slider-control.js',
-        'gauge.js'
-    ];
-
-    // Dynamically import all component modules
+const componentFiles = [
+    'colored-square.js',
+    'dial-knob.js',
+    'toggle-switch.js',
+    'slider-control.js',
+    'gauge.js',
+    'grill.js',
+    'volume-level.js'
+];    // Dynamically import all component modules
     for (const file of componentFiles) {
         try {
             await import(`../components/${file}`);
