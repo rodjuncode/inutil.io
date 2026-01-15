@@ -1,0 +1,24 @@
+{
+  "name": "i2-component-library",
+  "version": "0.1.0",
+  "description": "A mobile-first client-side component library for graphic UI elements with motion design",
+  "type": "module",
+  "main": "utils/component-loader.js",
+  "scripts": {
+    "dev": "npx http-server -p 8080 -o",
+    "preview": "npx http-server -p 8080"
+  },
+  "keywords": [
+    "components",
+    "ui-library",
+    "svg",
+    "motion-design",
+    "mobile-first",
+    "client-side"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

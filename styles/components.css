@@ -1,0 +1,120 @@
+/* Component Container Styles */
+.component-card {
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: inline-block;
+}
+
+.component-card:hover {
+    opacity: 0.8;
+}
+
+.component-card h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.component-card .component-demo {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.component-card .component-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.component-card .component-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+/* Common Component Patterns */
+.interactive-element {
+    cursor: pointer;
+    user-select: none;
+    transition: all var(--transition-base);
+}
+
+.interactive-element:active {
+    transform: scale(0.97);
+}
+
+/* SVG Base Styles */
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.svg-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn var(--transition-base) ease-in-out;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Mobile Touch States */
+@media (hover: none) and (pointer: coarse) {
+    .interactive-element:hover {
+        /* Remove hover effects on touch devices */
+        transform: none;
+    }
+    
+    .component-card:hover {
+        transform: none;
+        box-shadow: var(--shadow-md);
+    }
+}

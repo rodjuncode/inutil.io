@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="i2 Component Library - Mobile-first graphic UI components">
+    <title>i2 Component Library</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+    <div id="globalControls" style="position: fixed; top: 10px; right: 10px; background: var(--surface); border: 1px solid var(--border); padding: var(--spacing-md); z-index: 2000; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: var(--spacing-md);">
+        <div>
+            <label style="font-size: var(--font-size-sm); color: var(--text-secondary); display: block; margin-bottom: var(--spacing-xs);">
+                Grid Size: <span id="gridSizeValue">120</span>px
+            </label>
+            <input type="range" id="gridSizeSlider" min="60" max="300" value="120" style="width: 150px; cursor: pointer;">
+        </div>
+        <div>
+            <label style="font-size: var(--font-size-sm); color: var(--text-secondary); display: block; margin-bottom: var(--spacing-xs);">
+                Global Color
+            </label>
+            <input type="color" id="globalColorPicker" value="#dc2626" style="width: 150px; height: 44px; cursor: pointer; border: 1px solid var(--border); border-radius: var(--border-radius-sm);">
+        </div>
+    </div>
+    
+    <main class="component-showcase">
+        <section class="component-grid" id="componentGrid">
+            <!-- Components will be loaded dynamically here -->
+        </section>
+    </main>
+
+    <script type="module" src="utils/component-loader.js"></script>
+    <script type="module">
+        import { loadComponents } from './utils/component-loader.js';
+        
+        // Initialize and load all available components
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComponents();
+            
+            // Global grid size control
+            const slider = document.getElementById('gridSizeSlider');
+            const sizeValue = document.getElementById('gridSizeValue');
+            const colorPicker = document.getElementById('globalColorPicker');
+            
+            slider.addEventListener('input', (e) => {
+                const size = e.target.value;
+                sizeValue.textContent = size;
+                
+                // Update CSS custom property for grid size
+                document.documentElement.style.setProperty('--grid-size', `${size}px`);
+                
+                // Update background grid
+                document.body.style.backgroundSize = `${size}px ${size}px`;
+                
+                // Update all components
+                document.querySelectorAll('.colored-square').forEach(square => {
+                    square.style.width = `${size}px`;
+                    square.style.height = `${size}px`;
+                    
+                    // Update SVG inside if it exists (for dial knob)
+                    const svg = square.querySelector('svg');
+                    if (svg) {
+                        svg.setAttribute('width', size);
+                        svg.setAttribute('height', size);
+                    }
+                });
+            });
+            
+            // Global color control
+            colorPicker.addEventListener('input', (e) => {
+                const color = e.target.value;
+                
+                // Convert hex to RGB
+                const r = parseInt(color.substr(1, 2), 16);
+                const g = parseInt(color.substr(3, 2), 16);
+                const b = parseInt(color.substr(5, 2), 16);
+                
+                // Update all components
+                document.querySelectorAll('.colored-square').forEach(square => {
+                    // Get current transparency from the background color
+                    const currentBg = window.getComputedStyle(square).backgroundColor;
+                    const alphaMatch = currentBg.match(/rgba?\([^,]+,[^,]+,[^,]+,?\s*([0-9.]+)?\)/);
+                    const alpha = alphaMatch && alphaMatch[1] ? alphaMatch[1] : 0.7;
+                    
+                    square.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
