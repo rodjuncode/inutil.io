@@ -19,8 +19,8 @@ Open your browser to `http://localhost:8080` to view the component showcase.
 ## Project Structure
 
 ```
-i2/
-├── components/          # Individual component modules
+inutil.io/
+├── components/          # Component modules
 ├── demos/              # Component usage examples and demos
 ├── styles/             # Global styles and CSS variables
 │   ├── base.css       # Mobile-first base styles & design tokens

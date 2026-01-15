@@ -1,4 +1,4 @@
-# GitHub Copilot Instructions for i2 Component Library
+# GitHub Copilot Instructions for Inutil.io Component Library
 
 ## Project Overview
 

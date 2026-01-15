@@ -1,6 +1,6 @@
 {
-  "name": "i2-component-library",
-  "version": "0.1.0",
+  "name": "inutil.io",
+  "version": "1.0.0",
   "description": "A mobile-first client-side component library for graphic UI elements with motion design",
   "type": "module",
   "main": "utils/component-loader.js",
