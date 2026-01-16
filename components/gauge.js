@@ -99,14 +99,12 @@ const Gauge = {
         square.appendChild(svg);
         
         // Move needle randomly on mouse over
-        square.addEventListener('mouseenter', () => {
-            // For upper semi-circle: -180 (left) through -90 (up) to 0 (right)
+        const animateNeedle = () => {
             const targetAngle = -180 + Math.random() * 180;
             const startAngle = needleAngle;
             const startTime = performance.now();
-            const duration = 500; // milliseconds
+            const duration = 500;
             
-            // Ease-out cubic function
             const easeOutCubic = (t) => {
                 return 1 - Math.pow(1 - t, 3);
             };
@@ -135,6 +133,40 @@ const Gauge = {
             };
             
             requestAnimationFrame(animate);
+        };
+        
+        square.addEventListener('mouseenter', animateNeedle);
+        
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            animateNeedle();
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
         });
         
         // Create controls panel (hidden by default)

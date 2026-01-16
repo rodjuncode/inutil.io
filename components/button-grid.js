@@ -105,6 +105,62 @@ const ButtonGrid = {
             }
         });
         
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        const startAnimation = () => {
+            if (animationInterval) return;
+            animationInterval = setInterval(() => {
+                const toggleCount = Math.floor(Math.random() * 3) + 2;
+                for (let i = 0; i < toggleCount; i++) {
+                    const randomIndex = Math.floor(Math.random() * buttonStates.length);
+                    buttonStates[randomIndex] = !buttonStates[randomIndex];
+                    cells[randomIndex].setAttribute('fill', buttonStates[randomIndex] ? 'black' : 'rgba(0, 0, 0, 0.2)');
+                }
+            }, 200);
+        };
+        
+        const stopAnimation = () => {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+        };
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            startAnimation();
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                stopAnimation();
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (!isLongPress) {
+                stopAnimation();
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            stopAnimation();
+        });
+        
         // Initial draw
         drawGrid();
         

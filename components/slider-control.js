@@ -125,7 +125,7 @@ const SliderControl = {
         square.appendChild(svg);
         
         // Move sliders randomly on mouse over
-        square.addEventListener('mouseenter', () => {
+        const animateSliders = () => {
             for (let i = 0; i < sliderCount; i++) {
                 sliderValues[i] = Math.random() * 100;
                 
@@ -136,6 +136,40 @@ const SliderControl = {
                     const newX = 20 + (sliderValues[i] / 100) * 60;
                     sliderKnobs[i].setAttribute('x', (newX - 4).toString());
                 }
+            }
+        };
+        
+        square.addEventListener('mouseenter', animateSliders);
+        
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            animateSliders();
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
             }
         });
         

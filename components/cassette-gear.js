@@ -161,6 +161,46 @@ const CassetteGear = {
             isRotating = false;
         });
         
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            if (!isRotating) {
+                isRotating = true;
+                rotateGear();
+            }
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                isRotating = false;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (!isLongPress) {
+                isRotating = false;
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            isRotating = false;
+        });
+        
         function rotateGear() {
             if (!isRotating) return;
             

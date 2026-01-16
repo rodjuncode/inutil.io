@@ -282,6 +282,30 @@ const Grill = {
             backdrop.style.display = 'block';
         });
         
+        // Touch support for mobile - long press opens config
+        let touchTimer = null;
+        
+        square.addEventListener('touchstart', (e) => {
+            touchTimer = setTimeout(() => {
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+        });
+        
         // Close controls
         const closeControls = () => {
             controlsPanel.style.display = 'none';

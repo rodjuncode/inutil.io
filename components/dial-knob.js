@@ -62,6 +62,43 @@ const DialKnob = {
             innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
         });
         
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            
+            // Trigger animation on touch
+            const randomDegrees = Math.floor(Math.random() * 361);
+            innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
+            
+            // Start timer for long press (500ms)
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            // Prevent click event from firing after touch
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+        });
+        
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
         controlsPanel.className = 'controls-panel';

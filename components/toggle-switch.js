@@ -65,7 +65,7 @@ const ToggleSwitch = {
         square.appendChild(svg);
         
         // Toggle switch on mouse over
-        square.addEventListener('mouseenter', () => {
+        const toggleSwitch = () => {
             isOn = !isOn;
             if (isHorizontal) {
                 if (isOn) {
@@ -83,6 +83,40 @@ const ToggleSwitch = {
                     switchKnob.setAttribute('cy', '40');
                     switchKnob.setAttribute('fill', 'black');
                 }
+            }
+        };
+        
+        square.addEventListener('mouseenter', toggleSwitch);
+        
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            toggleSwitch();
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
             }
         });
         

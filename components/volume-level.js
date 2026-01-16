@@ -114,14 +114,15 @@ const VolumeLevel = {
         createVolumeIndicator();
         
         // Mouse over animation - change volume level slightly
-        square.addEventListener('mouseenter', () => {
-            // Generate new random levels for each column
+        const changeVolume = () => {
             const newLevels = [];
             for (let i = 0; i < columnCount; i++) {
-                newLevels.push(Math.random() * 0.4 + 0.3); // Random between 30% and 70%
+                newLevels.push(Math.random() * 0.4 + 0.3);
             }
             animateVolumeChange(newLevels);
-        });
+        };
+        
+        square.addEventListener('mouseenter', changeVolume);
         
         function animateVolumeChange(targetLevels) {
             const startLevels = [...volumeLevels];
@@ -149,6 +150,38 @@ const VolumeLevel = {
         }
         
         square.appendChild(svg);
+        
+        // Touch support for mobile
+        let touchTimer = null;
+        let isLongPress = false;
+        
+        square.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            changeVolume();
+            
+            touchTimer = setTimeout(() => {
+                isLongPress = true;
+                controlsPanel.style.display = 'block';
+                backdrop.style.display = 'block';
+            }, 500);
+        });
+        
+        square.addEventListener('touchend', (e) => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+            if (isLongPress) {
+                e.preventDefault();
+            }
+        });
+        
+        square.addEventListener('touchcancel', () => {
+            if (touchTimer) {
+                clearTimeout(touchTimer);
+                touchTimer = null;
+            }
+        });
         
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
