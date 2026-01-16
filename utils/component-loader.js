@@ -50,7 +50,8 @@ const componentFiles = [
     'gauge.js',
     'grill.js',
     'volume-level.js',
-    'cassette-gear.js'
+    'cassette-gear.js',
+    'button-grid.js'
 ];    // Dynamically import all component modules
     for (const file of componentFiles) {
         try {
