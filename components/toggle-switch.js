@@ -13,6 +13,7 @@ const ToggleSwitch = {
         const squareSize = 120;
         let isOn = false;
         let isHorizontal = true; // Orientation: true = horizontal, false = vertical
+        const instanceId = `toggle-${Math.random().toString(36).substr(2, 9)}`; // Unique ID for this instance
         
         square.style.cssText = `
             width: ${squareSize}px;
@@ -171,7 +172,7 @@ const ToggleSwitch = {
         
         const horizontalRadio = document.createElement('input');
         horizontalRadio.type = 'radio';
-        horizontalRadio.name = 'orientation';
+        horizontalRadio.name = `orientation-${instanceId}`;
         horizontalRadio.value = 'horizontal';
         horizontalRadio.checked = true;
         horizontalRadio.style.cssText = 'cursor: pointer; width: 20px; height: 20px;';
@@ -188,7 +189,7 @@ const ToggleSwitch = {
         
         const verticalRadio = document.createElement('input');
         verticalRadio.type = 'radio';
-        verticalRadio.name = 'orientation';
+        verticalRadio.name = `orientation-${instanceId}`;
         verticalRadio.value = 'vertical';
         verticalRadio.style.cssText = 'cursor: pointer; width: 20px; height: 20px;';
         

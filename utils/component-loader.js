@@ -73,10 +73,243 @@ const componentFiles = [
         return;
     }
 
+    // Track active components in the grid
+    const activeComponents = [];
+    
     componentRegistry.forEach((component, name) => {
+        activeComponents.push({ name, component });
+    });
+    
+    // Render initially visible components
+    activeComponents.forEach(({ name, component }) => {
         const card = createComponentCard(name, component);
         componentGrid.appendChild(card);
     });
+    
+    // Add the "+" button card at the end
+    const addButton = createAddButton(componentRegistry);
+    componentGrid.appendChild(addButton);
+}
+
+/**
+ * Create the add button card
+ * @param {Map} componentRegistry - Registry of all available components
+ * @returns {HTMLElement} Add button card
+ */
+function createAddButton(componentRegistry) {
+    const card = document.createElement('div');
+    card.className = 'component-card';
+    
+    const button = document.createElement('div');
+    button.className = 'add-component-button';
+    button.style.cssText = `
+        width: var(--grid-size, 120px);
+        height: var(--grid-size, 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: var(--surface);
+        border: 2px dashed var(--border);
+        border-radius: var(--border-radius-sm);
+        transition: all var(--transition-fast);
+    `;
+    
+    const plusIcon = document.createElement('div');
+    plusIcon.style.cssText = `
+        font-size: 48px;
+        color: var(--text-secondary);
+        line-height: 1;
+        user-select: none;
+    `;
+    plusIcon.textContent = '+';
+    
+    button.appendChild(plusIcon);
+    card.appendChild(button);
+    
+    // Hover effect
+    button.addEventListener('mouseenter', () => {
+        button.style.borderColor = 'var(--primary-color)';
+        plusIcon.style.color = 'var(--primary-color)';
+    });
+    
+    button.addEventListener('mouseleave', () => {
+        button.style.borderColor = 'var(--border)';
+        plusIcon.style.color = 'var(--text-secondary)';
+    });
+    
+    // Click to show component selector
+    button.addEventListener('click', () => {
+        showComponentSelector(componentRegistry);
+    });
+    
+    return card;
+}
+
+/**
+ * Show modal with all available components to add
+ * @param {Map} componentRegistry - Registry of all available components
+ */
+function showComponentSelector(componentRegistry) {
+    // Create backdrop
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Create modal
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-lg);
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow-y: auto;
+    `;
+    
+    // Title
+    const title = document.createElement('h2');
+    title.textContent = 'Add Component';
+    title.style.cssText = `
+        margin: 0 0 var(--spacing-md) 0;
+        font-size: var(--font-size-xl);
+        color: var(--text-primary);
+    `;
+    modal.appendChild(title);
+    
+    // Component grid
+    const grid = document.createElement('div');
+    grid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    `;
+    
+    // Add each component as a selectable option
+    componentRegistry.forEach((component, name) => {
+        const option = document.createElement('div');
+        option.style.cssText = `
+            cursor: pointer;
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-sm);
+            transition: all var(--transition-fast);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+        `;
+        
+        // Create small non-interactive version of the component
+        const preview = document.createElement('div');
+        preview.style.cssText = `
+            pointer-events: none;
+            transform: scale(0.7);
+            transform-origin: center;
+        `;
+        
+        try {
+            const rendered = component.render();
+            if (rendered instanceof HTMLElement || rendered instanceof SVGElement) {
+                preview.appendChild(rendered.cloneNode(true));
+            }
+        } catch (error) {
+            console.error(`Error rendering preview for "${name}":`, error);
+        }
+        
+        // Component name label
+        const label = document.createElement('div');
+        label.textContent = name;
+        label.style.cssText = `
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: var(--spacing-xs);
+        `;
+        
+        option.appendChild(preview);
+        option.appendChild(label);
+        
+        // Hover effect
+        option.addEventListener('mouseenter', () => {
+            option.style.borderColor = 'var(--primary-color)';
+            option.style.backgroundColor = 'rgba(220, 38, 38, 0.1)';
+        });
+        
+        option.addEventListener('mouseleave', () => {
+            option.style.borderColor = 'var(--border)';
+            option.style.backgroundColor = 'transparent';
+        });
+        
+        // Click to add component
+        option.addEventListener('click', () => {
+            addComponentToGrid(name, component);
+            document.body.removeChild(backdrop);
+        });
+        
+        grid.appendChild(option);
+    });
+    
+    modal.appendChild(grid);
+    
+    // Close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Cancel';
+    closeButton.style.cssText = `
+        width: 100%;
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: var(--surface);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: var(--font-size-base);
+        min-height: 44px;
+    `;
+    
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(backdrop);
+    });
+    
+    modal.appendChild(closeButton);
+    backdrop.appendChild(modal);
+    
+    // Click backdrop to close
+    backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+            document.body.removeChild(backdrop);
+        }
+    });
+    
+    document.body.appendChild(backdrop);
+}
+
+/**
+ * Add a component to the grid
+ * @param {string} name - Component name
+ * @param {Object} component - Component definition
+ */
+function addComponentToGrid(name, component) {
+    const componentGrid = document.getElementById('componentGrid');
+    
+    // Find the add button and insert before it
+    const addButton = componentGrid.querySelector('.component-card:last-child');
+    const newCard = createComponentCard(name, component);
+    
+    componentGrid.insertBefore(newCard, addButton);
 }
 
 /**

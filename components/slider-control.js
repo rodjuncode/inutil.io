@@ -227,7 +227,7 @@ const SliderControl = {
         horizontalRadio.type = 'radio';
         horizontalRadio.name = 'slider-orientation';
         horizontalRadio.value = 'horizontal';
-        horizontalRadio.checked = true;
+        horizontalRadio.checked = false;
         horizontalRadio.style.cssText = 'cursor: pointer; width: 20px; height: 20px;';
         
         const horizontalText = document.createElement('span');
@@ -244,6 +244,7 @@ const SliderControl = {
         verticalRadio.type = 'radio';
         verticalRadio.name = 'slider-orientation';
         verticalRadio.value = 'vertical';
+        verticalRadio.checked = true;
         verticalRadio.style.cssText = 'cursor: pointer; width: 20px; height: 20px;';
         
         const verticalText = document.createElement('span');
@@ -296,8 +297,8 @@ const SliderControl = {
             createSliders();
         };
         
-        horizontalRadio.addEventListener('change', () => updateOrientation(true));
-        verticalRadio.addEventListener('change', () => updateOrientation(false));
+        horizontalRadio.addEventListener('change', () => updateOrientation(false));
+        verticalRadio.addEventListener('change', () => updateOrientation(true));
         
         countRadios.forEach((radio, index) => {
             radio.addEventListener('change', () => updateSliderCount(index + 1));
