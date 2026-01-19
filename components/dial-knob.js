@@ -4,8 +4,10 @@ const DialKnob = {
     description: 'A colored square with a centered dial knob control',
     
     render() {
+        let errorMsg = null;
+        let container;
         try {
-            const container = document.createElement('div');
+            container = document.createElement('div');
             container.style.cssText = 'position: relative;';
             // Create the square element (inherited from ColoredSquare)
             const square = document.createElement('div');
@@ -97,15 +99,17 @@ const DialKnob = {
                 });
             }
             // ...existing code...
-            // (rest of render function unchanged)
-            // ...existing code...
-            return container;
         } catch (err) {
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = 'color: red; background: #fff0f0; padding: 1em; border: 1px solid #f00;';
-            errorDiv.textContent = 'DialKnob error: ' + (err && err.message ? err.message : err);
-            return errorDiv;
+            errorMsg = 'DialKnob error: ' + (err && err.message ? err.message : err);
         }
+        // Always show error/info message at the top
+        const infoDiv = document.createElement('div');
+        infoDiv.style.cssText = 'color: #900; background: #fffbe6; padding: 0.5em; border-bottom: 1px solid #f90; font-size: 0.95em;';
+        infoDiv.textContent = errorMsg ? errorMsg : 'no errors';
+        const wrapper = document.createElement('div');
+        wrapper.appendChild(infoDiv);
+        if (container) wrapper.appendChild(container);
+        return wrapper;
         
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
