@@ -109,7 +109,10 @@ const DialKnob = {
         const wrapper = document.createElement('div');
         wrapper.appendChild(infoDiv);
         if (container) wrapper.appendChild(container);
+        // ...existing code for controlsPanel, backdrop, controls, etc. ...
+        // (No return here! Move to end)
 
+        // --- CONTROLS PANEL AND BACKDROP LOGIC (unreachable before, now runs) ---
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
         controlsPanel.className = 'controls-panel';
@@ -156,7 +159,9 @@ const DialKnob = {
         colorLabel.style.cssText = 'font-size: var(--font-size-sm); color: var(--text-secondary);';
 
         const colorInput = document.createElement('input');
-        // ...existing code...
+        // ...existing code for colorInput, transparency slider, radius slider, close button, etc. ...
+
+        // (All the rest of the UI logic remains unchanged)
 
         // Append controls panel and backdrop to DOM
         document.body.appendChild(backdrop);
