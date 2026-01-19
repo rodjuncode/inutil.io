@@ -6,7 +6,6 @@ const DialKnob = {
     render() {
         let errorMsg = null;
         let container;
-        showGlobalInfoBanner('DialKnob render() called', false);
         try {
             container = document.createElement('div');
             container.style.cssText = 'position: relative;';

@@ -54,14 +54,11 @@ export function getComponent(name) {
  * Load all components from the components directory
  */
 export async function loadComponents() {
-    showGlobalInfoBanner('Loader: loadComponents() called', false);
     const componentGrid = document.getElementById('componentGrid');
     if (!componentGrid) {
-        showGlobalInfoBanner('Loader: componentGrid not found', true);
         console.error('Component grid element not found');
         return;
     }
-    showGlobalInfoBanner('Loader: componentGrid found', false);
 
     // List of component modules to load
     // Add new components to this array
@@ -76,20 +73,16 @@ const componentFiles = [
     'cassette-gear.js',
     'button-grid.js'
 ];
-    showGlobalInfoBanner('Loader: importing component modules...', false);
     for (const file of componentFiles) {
         try {
             await import(`../components/${file}`);
         } catch (error) {
-            showGlobalInfoBanner(`Loader: failed to import ${file}`, true);
             console.error(`Failed to load component from ${file}:`, error);
         }
     }
-    showGlobalInfoBanner('Loader: all component modules imported', false);
 
     // Render all registered components
     if (componentRegistry.size === 0) {
-        showGlobalInfoBanner('Loader: componentRegistry is empty after imports', true);
         componentGrid.innerHTML = `
             <div class="component-card" style="grid-column: 1 / -1;">
                 <p style="text-align: center; color: var(--text-secondary);">
@@ -99,7 +92,6 @@ const componentFiles = [
         `;
         return;
     }
-    showGlobalInfoBanner('Loader: rendering components...', false);
 
     // Track active components in the grid
     const activeComponents = [];
@@ -113,7 +105,6 @@ const componentFiles = [
         const card = createComponentCard(name, component);
         componentGrid.appendChild(card);
     });
-    showGlobalInfoBanner('Loader: all components rendered', false);
     
     // Add the "+" button card at the end
     const addButton = createAddButton(componentRegistry);
