@@ -1,7 +1,28 @@
+// Global info/error banner for diagnostics
+export function showGlobalInfoBanner(msg, isError = false) {
+    let banner = document.getElementById('global-info-banner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'global-info-banner';
+        banner.style.cssText = 'position:fixed;top:0;left:0;width:100vw;z-index:9999;padding:0.5em 1em;font-size:1em;text-align:center;' +
+            'background:' + (isError ? '#fff0f0' : '#f9f9ff') + ';color:' + (isError ? '#a00' : '#333') + ';border-bottom:1px solid ' + (isError ? '#f00' : '#99f') + ';';
+        document.body.prepend(banner);
+    }
+    banner.textContent = msg;
+}
 /**
  * Component Loader
  * Dynamically loads and registers UI components
  */
+
+
+/**
+ * Utility: Detect if current device is a touch device (mobile/tablet)
+ * Uses modern media query for accuracy
+ */
+export function isTouchDevice() {
+    return window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
 
 const componentRegistry = new Map();
 
@@ -33,12 +54,14 @@ export function getComponent(name) {
  * Load all components from the components directory
  */
 export async function loadComponents() {
+    showGlobalInfoBanner('Loader: loadComponents() called', false);
     const componentGrid = document.getElementById('componentGrid');
-    
     if (!componentGrid) {
+        showGlobalInfoBanner('Loader: componentGrid not found', true);
         console.error('Component grid element not found');
         return;
     }
+    showGlobalInfoBanner('Loader: componentGrid found', false);
 
     // List of component modules to load
     // Add new components to this array
@@ -52,17 +75,21 @@ const componentFiles = [
     'volume-level.js',
     'cassette-gear.js',
     'button-grid.js'
-];    // Dynamically import all component modules
+];
+    showGlobalInfoBanner('Loader: importing component modules...', false);
     for (const file of componentFiles) {
         try {
             await import(`../components/${file}`);
         } catch (error) {
+            showGlobalInfoBanner(`Loader: failed to import ${file}`, true);
             console.error(`Failed to load component from ${file}:`, error);
         }
     }
+    showGlobalInfoBanner('Loader: all component modules imported', false);
 
     // Render all registered components
     if (componentRegistry.size === 0) {
+        showGlobalInfoBanner('Loader: componentRegistry is empty after imports', true);
         componentGrid.innerHTML = `
             <div class="component-card" style="grid-column: 1 / -1;">
                 <p style="text-align: center; color: var(--text-secondary);">
@@ -72,6 +99,7 @@ const componentFiles = [
         `;
         return;
     }
+    showGlobalInfoBanner('Loader: rendering components...', false);
 
     // Track active components in the grid
     const activeComponents = [];
@@ -85,6 +113,7 @@ const componentFiles = [
         const card = createComponentCard(name, component);
         componentGrid.appendChild(card);
     });
+    showGlobalInfoBanner('Loader: all components rendered', false);
     
     // Add the "+" button card at the end
     const addButton = createAddButton(componentRegistry);
