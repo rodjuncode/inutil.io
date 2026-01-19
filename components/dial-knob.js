@@ -1,4 +1,4 @@
-import { registerComponent, createSVGElement, getViewBox, isTouchDevice } from '../utils/component-loader.js';
+import { registerComponent, createSVGElement, getViewBox, isTouchDevice, showGlobalInfoBanner } from '../utils/component-loader.js';
 
 const DialKnob = {
     description: 'A colored square with a centered dial knob control',
@@ -6,6 +6,7 @@ const DialKnob = {
     render() {
         let errorMsg = null;
         let container;
+        showGlobalInfoBanner('DialKnob render() called', false);
         try {
             container = document.createElement('div');
             container.style.cssText = 'position: relative;';
@@ -109,8 +110,7 @@ const DialKnob = {
         const wrapper = document.createElement('div');
         wrapper.appendChild(infoDiv);
         if (container) wrapper.appendChild(container);
-        return wrapper;
-        
+
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
         controlsPanel.className = 'controls-panel';
@@ -127,7 +127,7 @@ const DialKnob = {
             z-index: 1000;
             min-width: 300px;
         `;
-        
+
         // Create backdrop
         const backdrop = document.createElement('div');
         backdrop.style.cssText = `
@@ -140,23 +140,30 @@ const DialKnob = {
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         `;
-        
+
         // Create controls (inherited from ColoredSquare)
         const controls = document.createElement('div');
         controls.style.cssText = 'display: flex; flex-direction: column; gap: var(--spacing-md);';
-        
+
         // Title
         const title = document.createElement('h3');
         title.textContent = 'Dial Knob Controls';
         title.style.cssText = 'margin: 0 0 var(--spacing-sm) 0; font-size: var(--font-size-lg);';
         controls.appendChild(title);
-        
+
         // Color picker
         const colorLabel = document.createElement('label');
         colorLabel.textContent = 'Color: ';
         colorLabel.style.cssText = 'font-size: var(--font-size-sm); color: var(--text-secondary);';
-        
+
         const colorInput = document.createElement('input');
+        // ...existing code...
+
+        // Append controls panel and backdrop to DOM
+        document.body.appendChild(backdrop);
+        document.body.appendChild(controlsPanel);
+
+        return wrapper;
         colorInput.type = 'color';
         colorInput.value = '#dc2626';
         colorInput.style.cssText = `
