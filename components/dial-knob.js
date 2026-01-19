@@ -101,16 +101,11 @@ const DialKnob = {
             // ...existing code...
         } catch (err) {
             errorMsg = 'DialKnob error: ' + (err && err.message ? err.message : err);
+            // Optionally, you could display this error somewhere in the UI
+            // For now, just log it
+            console.error(errorMsg);
         }
-        // Always show error/info message at the top
-        const infoDiv = document.createElement('div');
-        infoDiv.style.cssText = 'color: #900; background: #fffbe6; padding: 0.5em; border-bottom: 1px solid #f90; font-size: 0.95em;';
-        infoDiv.textContent = errorMsg ? errorMsg : 'no errors';
-        const wrapper = document.createElement('div');
-        wrapper.appendChild(infoDiv);
-        if (container) wrapper.appendChild(container);
         // ...existing code for controlsPanel, backdrop, controls, etc. ...
-        // (No return here! Move to end)
 
         // --- CONTROLS PANEL AND BACKDROP LOGIC (unreachable before, now runs) ---
         // Create controls panel (hidden by default)
@@ -167,7 +162,8 @@ const DialKnob = {
         document.body.appendChild(backdrop);
         document.body.appendChild(controlsPanel);
 
-        return wrapper;
+        // Only return the main component container
+        return container;
         colorInput.type = 'color';
         colorInput.value = '#dc2626';
         colorInput.style.cssText = `
