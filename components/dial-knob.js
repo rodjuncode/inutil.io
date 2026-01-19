@@ -1,4 +1,4 @@
-import { registerComponent, createSVGElement, getViewBox } from '../utils/component-loader.js';
+import { registerComponent, createSVGElement, getViewBox, isTouchDevice } from '../utils/component-loader.js';
 
 const DialKnob = {
     description: 'A colored square with a centered dial knob control',
@@ -56,48 +56,53 @@ const DialKnob = {
         svg.appendChild(innerCircle);
         square.appendChild(svg);
         
-        // Add mouse over interaction to spin the dial
-        square.addEventListener('mouseenter', () => {
-            const randomDegrees = Math.floor(Math.random() * 361);
-            innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
-        });
-        
-        // Touch support for mobile
+        // --- Interaction pattern: Desktop vs Mobile ---
         let touchTimer = null;
         let isLongPress = false;
-        
-        square.addEventListener('touchstart', (e) => {
-            isLongPress = false;
-            
-            // Trigger animation on touch
-            const randomDegrees = Math.floor(Math.random() * 361);
-            innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
-            
-            // Start timer for long press (500ms)
-            touchTimer = setTimeout(() => {
-                isLongPress = true;
-                controlsPanel.style.display = 'block';
-                backdrop.style.display = 'block';
-            }, 500);
-        });
-        
-        square.addEventListener('touchend', (e) => {
-            if (touchTimer) {
-                clearTimeout(touchTimer);
-                touchTimer = null;
-            }
-            // Prevent click event from firing after touch
-            if (isLongPress) {
+        let lastTouchTime = 0;
+
+        if (isTouchDevice()) {
+            // Mobile/touch: tap = animate, long-press = config
+            square.addEventListener('touchstart', (e) => {
+                isLongPress = false;
+                // Trigger animation on tap
+                const randomDegrees = Math.floor(Math.random() * 361);
+                innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
+                // Start timer for long press (500ms)
+                touchTimer = setTimeout(() => {
+                    isLongPress = true;
+                    controlsPanel.style.display = 'block';
+                    backdrop.style.display = 'block';
+                }, 500);
+            });
+            square.addEventListener('touchend', (e) => {
+                if (touchTimer) {
+                    clearTimeout(touchTimer);
+                    touchTimer = null;
+                }
+                // Prevent click event from firing after long press
+                if (isLongPress) {
+                    e.preventDefault();
+                }
+            });
+            square.addEventListener('touchcancel', () => {
+                if (touchTimer) {
+                    clearTimeout(touchTimer);
+                    touchTimer = null;
+                }
+            });
+            // On touch devices, always prevent click from opening config
+            square.addEventListener('click', (e) => {
                 e.preventDefault();
-            }
-        });
-        
-        square.addEventListener('touchcancel', () => {
-            if (touchTimer) {
-                clearTimeout(touchTimer);
-                touchTimer = null;
-            }
-        });
+                e.stopPropagation();
+            }, true);
+        } else {
+            // Desktop: hover = animate, click = config
+            square.addEventListener('mouseenter', () => {
+                const randomDegrees = Math.floor(Math.random() * 361);
+                innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
+            });
+        }
         
         // Create controls panel (hidden by default)
         const controlsPanel = document.createElement('div');
