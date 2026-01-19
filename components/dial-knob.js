@@ -4,104 +4,107 @@ const DialKnob = {
     description: 'A colored square with a centered dial knob control',
     
     render() {
-        const container = document.createElement('div');
-        container.style.cssText = 'position: relative;';
-        
-        // Create the square element (inherited from ColoredSquare)
-        const square = document.createElement('div');
-        square.className = 'colored-square';
-        const squareSize = 120;
-        let circleRadiusPercent = 60; // Default 60% of square side
-        
-        square.style.cssText = `
-            width: ${squareSize}px;
-            height: ${squareSize}px;
-            background-color: rgba(220, 38, 38, 0.7);
-            transition: all var(--transition-base);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        `;
-        
-        // Create SVG for the dial
-        const svg = createSVGElement('svg', {
-            viewBox: getViewBox(100, 100),
-            width: squareSize.toString(),
-            height: squareSize.toString(),
-            style: 'position: absolute; pointer-events: none;'
-        });
-        
-        // Outer circle - radius based on circleRadiusPercent
-        const outerCircle = createSVGElement('circle', {
-            cx: '50',
-            cy: '50',
-            r: (circleRadiusPercent / 2).toString(),
-            fill: 'none',
-            stroke: 'black',
-            'stroke-width': '2'
-        });
-        
-        // Inner circle (indicator/pointer) - positioned near the outer circle's edge
-        const innerCircle = createSVGElement('circle', {
-            cx: '50',
-            cy: (50 - (circleRadiusPercent / 2) + 10).toString(),
-            r: '3',
-            fill: 'black',
-            style: 'transition: transform 0.6s ease-out; transform-origin: 50px 50px;'
-        });
-        
-        svg.appendChild(outerCircle);
-        svg.appendChild(innerCircle);
-        square.appendChild(svg);
-        
-        // --- Interaction pattern: Desktop vs Mobile ---
-        let touchTimer = null;
-        let isLongPress = false;
-        let lastTouchTime = 0;
-
-        if (isTouchDevice()) {
-            // Mobile/touch: tap = animate, long-press = config
-            square.addEventListener('touchstart', (e) => {
-                isLongPress = false;
-                // Trigger animation on tap
-                const randomDegrees = Math.floor(Math.random() * 361);
-                innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
-                // Start timer for long press (500ms)
-                touchTimer = setTimeout(() => {
-                    isLongPress = true;
-                    controlsPanel.style.display = 'block';
-                    backdrop.style.display = 'block';
-                }, 500);
+        try {
+            const container = document.createElement('div');
+            container.style.cssText = 'position: relative;';
+            // Create the square element (inherited from ColoredSquare)
+            const square = document.createElement('div');
+            square.className = 'colored-square';
+            const squareSize = 120;
+            let circleRadiusPercent = 60; // Default 60% of square side
+            square.style.cssText = `
+                width: ${squareSize}px;
+                height: ${squareSize}px;
+                background-color: rgba(220, 38, 38, 0.7);
+                transition: all var(--transition-base);
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            `;
+            // Create SVG for the dial
+            const svg = createSVGElement('svg', {
+                viewBox: getViewBox(100, 100),
+                width: squareSize.toString(),
+                height: squareSize.toString(),
+                style: 'position: absolute; pointer-events: none;'
             });
-            square.addEventListener('touchend', (e) => {
-                if (touchTimer) {
-                    clearTimeout(touchTimer);
-                    touchTimer = null;
-                }
-                // Prevent click event from firing after long press
-                if (isLongPress) {
+            // Outer circle - radius based on circleRadiusPercent
+            const outerCircle = createSVGElement('circle', {
+                cx: '50',
+                cy: '50',
+                r: (circleRadiusPercent / 2).toString(),
+                fill: 'none',
+                stroke: 'black',
+                'stroke-width': '2'
+            });
+            // Inner circle (indicator/pointer) - positioned near the outer circle's edge
+            const innerCircle = createSVGElement('circle', {
+                cx: '50',
+                cy: (50 - (circleRadiusPercent / 2) + 10).toString(),
+                r: '3',
+                fill: 'black',
+                style: 'transition: transform 0.6s ease-out; transform-origin: 50px 50px;'
+            });
+            svg.appendChild(outerCircle);
+            svg.appendChild(innerCircle);
+            square.appendChild(svg);
+            // --- Interaction pattern: Desktop vs Mobile ---
+            let touchTimer = null;
+            let isLongPress = false;
+            let lastTouchTime = 0;
+            if (isTouchDevice()) {
+                // Mobile/touch: tap = animate, long-press = config
+                square.addEventListener('touchstart', (e) => {
+                    isLongPress = false;
+                    // Trigger animation on tap
+                    const randomDegrees = Math.floor(Math.random() * 361);
+                    innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
+                    // Start timer for long press (500ms)
+                    touchTimer = setTimeout(() => {
+                        isLongPress = true;
+                        controlsPanel.style.display = 'block';
+                        backdrop.style.display = 'block';
+                    }, 500);
+                });
+                square.addEventListener('touchend', (e) => {
+                    if (touchTimer) {
+                        clearTimeout(touchTimer);
+                        touchTimer = null;
+                    }
+                    // Prevent click event from firing after long press
+                    if (isLongPress) {
+                        e.preventDefault();
+                    }
+                });
+                square.addEventListener('touchcancel', () => {
+                    if (touchTimer) {
+                        clearTimeout(touchTimer);
+                        touchTimer = null;
+                    }
+                });
+                // On touch devices, always prevent click from opening config
+                square.addEventListener('click', (e) => {
                     e.preventDefault();
-                }
-            });
-            square.addEventListener('touchcancel', () => {
-                if (touchTimer) {
-                    clearTimeout(touchTimer);
-                    touchTimer = null;
-                }
-            });
-            // On touch devices, always prevent click from opening config
-            square.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }, true);
-        } else {
-            // Desktop: hover = animate, click = config
-            square.addEventListener('mouseenter', () => {
-                const randomDegrees = Math.floor(Math.random() * 361);
-                innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
-            });
+                    e.stopPropagation();
+                }, true);
+            } else {
+                // Desktop: hover = animate, click = config
+                square.addEventListener('mouseenter', () => {
+                    const randomDegrees = Math.floor(Math.random() * 361);
+                    innerCircle.style.transform = `rotate(${randomDegrees}deg)`;
+                });
+            }
+            // ...existing code...
+            // (rest of render function unchanged)
+            // ...existing code...
+            return container;
+        } catch (err) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = 'color: red; background: #fff0f0; padding: 1em; border: 1px solid #f00;';
+            errorDiv.textContent = 'DialKnob error: ' + (err && err.message ? err.message : err);
+            return errorDiv;
         }
         
         // Create controls panel (hidden by default)
